@@ -1,28 +1,19 @@
 import streamlit as st
 
-def add_task(task):
-    with open("tasks.txt", "a") as file:
-        file.write(task + "\n")
+def add_task(task, tasks):
+    tasks.append(task)
 
-def remove_task(task):
-    with open("tasks.txt", "r") as file:
-        lines = file.readlines()
-    
-    with open("tasks.txt", "w") as file:
-        for line in lines:
-            if line.strip() != task:
-                file.write(line)
+def remove_task(task, tasks):
+    tasks.remove(task)
 
 def main():
     st.title("To-Do List")
+    tasks = st.session_state.get("tasks", [])
+
     task = st.text_input("New Task")
     if st.button("Add"):
-        add_task(task)
+        add_task(task, tasks)
         st.success("Task added!")
-
-    tasks = []
-    with open("tasks.txt", "r") as file:
-        tasks = file.readlines()
 
     if tasks:
         st.subheader("Tasks")
@@ -31,8 +22,10 @@ def main():
 
         remove = st.selectbox("Select a task to remove", tasks)
         if st.button("Remove"):
-            remove_task(remove)
+            remove_task(remove, tasks)
             st.success("Task removed!")
     
+    st.session_state["tasks"] = tasks
+
 if __name__ == "__main__":
     main()
